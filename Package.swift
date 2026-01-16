@@ -1,9 +1,9 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
   name: "pull-request-ping",
-  platforms: [.macOS(.v14)],
+  platforms: [.macOS(.v26)],
   products: [
     .library(
       name: "PullRequestPing",
@@ -30,6 +30,8 @@ let package = Package(
       url: "https://github.com/apple/swift-argument-parser.git",
       from: "1.3.0"
     ),
+    // Local LLM for PR comment summarization
+    .package(path: "../edgeprompt"),
   ],
   targets: [
     // PR comments library (parses and formats PR comments from GitHub/GitLab/Azure)
@@ -38,6 +40,7 @@ let package = Package(
       dependencies: [
         .product(name: "Subprocess", package: "swift-subprocess"),
         .product(name: "Markdown", package: "swift-markdown"),
+        .product(name: "EdgePromptCore", package: "edgeprompt"),
       ],
       linkerSettings: [
         // Translation.framework for neural machine translation (macOS 14.4+)

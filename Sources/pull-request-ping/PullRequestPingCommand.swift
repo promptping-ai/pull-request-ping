@@ -66,6 +66,9 @@ struct View: AsyncParsableCommand {
   @Flag(name: .long, help: "Show only resolved review threads")
   var resolved: Bool = false
 
+  @Flag(name: .long, help: "Show 1-2 sentence AI summary of comments")
+  var summary: Bool = false
+
   @Option(name: .shortAndLong, help: "Repository (owner/repo)")
   var repo: String?
 
@@ -149,6 +152,19 @@ struct View: AsyncParsableCommand {
     // Filter by resolution status if requested
     if unresolved || resolved {
       pr = filterByResolutionStatus(pr, showUnresolved: unresolved)
+    }
+
+    // Summary mode: single-line AI-generated summary
+    if summary {
+      let summaryService = PRSummaryService()
+      let summaryText: String
+      if unresolved {
+        summaryText = try await summaryService.summarizeUnresolved(pr)
+      } else {
+        summaryText = try await summaryService.summarize(pr)
+      }
+      print(summaryText)
+      return
     }
 
     // Format and print
